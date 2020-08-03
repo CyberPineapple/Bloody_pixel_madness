@@ -1,0 +1,14 @@
+{
+  "name": "BloodyPixelMadness",
+  "version": "0.0.1",
+  "description": "Platform game",
+  "main": "index.js",
+  "repository": "git@github.com:CyberPineapple/Bloody_pixel_madness.git",
+  "author": "cyber_pineapple",
+  "license": "MIT",
+  "devDependencies": {
+    "rollup": "^2.23.0",
+    "rollup-plugin-html-input": "0.0.2",
+    "rollup-plugin-serve": "^1.0.3"
+  }
+}
