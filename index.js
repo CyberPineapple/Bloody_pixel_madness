@@ -13,7 +13,7 @@ const keyboardKeys = {
 
 const player = new Player({});
 
-const player2 = new Player({ x: 100, y: 100, color: 'orange' });
+// const player2 = new Player({ x: 100, y: 100, color: 'orange' });
 
 const handleKeyDown = ({ code }) => {
   keyboardKeys[code] = true;
@@ -34,11 +34,11 @@ const gameTick = () => {
   if (keyboardKeys.KeyD) player.runRight();
   if (keyboardKeys.KeyW) player.jump();
 
-  if (keyboardKeys.ArrowLeft) player2.runLeft();
-  if (keyboardKeys.ArrowRight) player2.runRight();
-  if (keyboardKeys.ArrowUp) player2.jump();
+  // if (keyboardKeys.ArrowLeft) player2.runLeft();
+  // if (keyboardKeys.ArrowRight) player2.runRight();
+  // if (keyboardKeys.ArrowUp) player2.jump();
 
-  player2.draw();
+  // player2.draw();
 
   player.draw();
 
