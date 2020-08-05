@@ -1,6 +1,6 @@
 import Player from './src/objects/Player';
 import ctx from './src/utils/canvas';
-import mapObjects from './src/map/index.js';
+import { mapObjects, bulletArray } from './src/map/index.js';
 
 const keyboardKeys = {
   KeyA: false,
@@ -42,9 +42,9 @@ const gameTick = () => {
 
   player.draw();
 
-  mapObjects.forEach((object) => {
-    object.draw();
-  });
+  bulletArray.forEach((bullet) => bullet.draw());
+
+  mapObjects.forEach((object) => object.draw());
 };
 
 window.requestAnimationFrame(gameTick);

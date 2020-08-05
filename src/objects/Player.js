@@ -1,5 +1,6 @@
-import ctx from '../utils/canvas.js';
-import mapObjects from '../map/index.js';
+import ctx, { canvas } from '../utils/canvas.js';
+import { mapObjects, bulletArray } from '../map/index.js';
+import Bullet from './Bullet.js';
 import { isStaticIntersect } from '../utils/collision';
 import { gravity } from '../configs/index.js';
 
@@ -13,16 +14,27 @@ export default class Player {
 
     document.addEventListener('keydown', this.handleKeyDown);
     document.addEventListener('keyup', this.handleKeyUp);
+    canvas.addEventListener('mousemove', this.handleMouseMove);
   }
 
   params = {
     jumpHeight: 10,
     speed: 5,
     color: 'white',
+    speedOfFire: 10,
+  };
+
+  utils = {
+    speedOfFireFramesCounter: 0,
   };
 
   state = {
     jumping: false,
+  };
+
+  cursor = {
+    x: 0,
+    y: 0,
   };
 
   keyboardKeys = {};
@@ -33,6 +45,11 @@ export default class Player {
 
   handleKeyDown = ({ code }) => (this.keyboardKeys[code] = true);
   handleKeyUp = ({ code }) => (this.keyboardKeys[code] = false);
+  handleMouseMove = ({ clientX, clientY }) => {
+    this.cursor.x = clientX;
+    this.cursor.y = clientY;
+  };
+
   clearMove = () => {
     this.dx = 0;
     this.dy = 0;
@@ -41,16 +58,23 @@ export default class Player {
   draw = () => {
     this.clearMove();
     this.gravityPhysics();
-
+    this.utils.speedOfFireFramesCounter++;
     if (this.keyboardKeys.KeyA) this.runLeft();
     if (this.keyboardKeys.KeyD) this.runRight();
     if (this.keyboardKeys.KeyW) this.jump();
+    if (this.keyboardKeys.Space) this.fire();
+
     this.jumpInProgress();
     this.checkCollision();
     this.move();
     ctx.beginPath();
     ctx.fillStyle = this.params.color;
     ctx.fillRect(this.x, this.y, this.width, this.height);
+    ctx.closePath();
+
+    ctx.beginPath();
+    ctx.fillStyle = 'green';
+    ctx.fillRect(this.cursor.x, this.cursor.y, 5, 5);
     ctx.closePath();
   };
 
@@ -60,6 +84,18 @@ export default class Player {
   move = () => {
     this.x += this.dx;
     this.y += this.dy;
+  };
+
+  fire = () => {
+    if (this.utils.speedOfFireFramesCounter % this.params.speedOfFire === 0) {
+      bulletArray.push(
+        new Bullet({
+          x: this.x,
+          y: this.y,
+          target: this.cursor,
+        })
+      );
+    }
   };
 
   jump = () => {
