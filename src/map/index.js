@@ -68,14 +68,15 @@ const map = [
   '@               @@@@@@@@@@             @@@@@@@',
   '@    @@@@@@@                           @@@@@@@',
   '@                                      @@@@@@@',
+  '@@@@@@       @@@@@@     @@@@@    @@@@@@@@@@@@@',
   '@@@@@@       @@@@@@     @@@@@@@@@@@@@@@@@@@@@@',
   '@                                            @',
   '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@',
 ];
 
 const mapParser = () => {
-  const blockXSize = canvas.width / map[0].length;
-  const blockYSize = canvas.height / map.length;
+  const blockXSize = Math.round(canvas.width / map[0].length);
+  const blockYSize = Math.round(canvas.height / map.length);
 
   for (let i = 0; i < map.length; i++) {
     let result = Array.from(map[i].matchAll(/@+/g));
