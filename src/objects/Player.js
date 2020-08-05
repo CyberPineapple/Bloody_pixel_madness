@@ -1,94 +1,104 @@
 import ctx from '../utils/canvas.js';
 import mapObjects from '../map/index.js';
+import { isStaticIntersect } from '../utils/collision';
+import { gravity } from '../configs/index.js';
 
 export default class Player {
   constructor({ x, y, color }) {
-    (this.x = x || 50),
-      (this.y = y || 50),
-      (this.dx = 10),
-      (this.height = 30),
-      (this.width = 30),
-      (this.color = color || 'white'),
-      (this.dy = 10);
-    this.jumping = false;
+    (this.x = x || 50), (this.y = y || 50), (this.height = 20), (this.width = 20);
+
+    if (color) this.params.color = color;
+
     this.frameCounter = 0;
-    this.jumpHeight = 12;
+
+    document.addEventListener('keydown', this.handleKeyDown);
+    document.addEventListener('keyup', this.handleKeyUp);
   }
 
-  draw = () => {
-    if (this.jumping) {
-      if (this.frameCounter % this.jumpHeight === 0) this.stopJumping();
-      this.frameCounter++;
-      this.y -= this.dy;
-    }
+  params = {
+    jumpHeight: 10,
+    speed: 5,
+    color: 'white',
+  };
 
+  state = {
+    jumping: false,
+  };
+
+  keyboardKeys = {};
+
+  get playerData() {
+    return { x: this.x, y: this.y, width: this.width, height: this.height };
+  }
+
+  handleKeyDown = ({ code }) => (this.keyboardKeys[code] = true);
+  handleKeyUp = ({ code }) => (this.keyboardKeys[code] = false);
+  clearMove = () => {
+    this.dx = 0;
+    this.dy = 0;
+  };
+
+  draw = () => {
+    this.clearMove();
     this.gravityPhysics();
-    this.collision();
+
+    if (this.keyboardKeys.KeyA) this.runLeft();
+    if (this.keyboardKeys.KeyD) this.runRight();
+    if (this.keyboardKeys.KeyW) this.jump();
+    this.jumpInProgress();
+    this.checkCollision();
+    this.move();
     ctx.beginPath();
-    ctx.fillStyle = this.color;
+    ctx.fillStyle = this.params.color;
     ctx.fillRect(this.x, this.y, this.width, this.height);
     ctx.closePath();
   };
 
+  runLeft = () => (this.dx = -this.params.speed);
+  runRight = () => (this.dx = this.params.speed);
+
+  move = () => {
+    this.x += this.dx;
+    this.y += this.dy;
+  };
+
+  jump = () => {
+    if (this.state.jumping) return;
+    this.state.jumping = true;
+  };
+
+  jumpInProgress = () => {
+    if (this.state.jumping) {
+      if (this.frameCounter % this.params.jumpHeight === 0) this.stopJumping();
+      this.frameCounter++;
+      this.dy = -gravity;
+    }
+  };
+
   stopJumping = () => {
-    this.jumping = false;
+    this.state.jumping = false;
     this.frameCounter = 0;
   };
 
-  runLeft = () => (this.x -= this.dx);
-
-  runRight = () => (this.x += this.dx);
-
-  jump = () => {
-    if (!this.jumping && this.collision.y) this.jumping = true;
-  };
-
   gravityPhysics = () => {
-    if (!this.jumping) {
-      this.y += this.dy;
-    }
+    if (this.state.jumping) return;
+    this.dy = gravity;
   };
 
-  collision = () => {
-    this.collision.y = false;
-    this.collision.x = false;
+  checkCollision = () => {
     mapObjects.forEach((platform) => {
-      this.platformCollision(platform.params);
+      this.collision(platform.params);
     });
   };
 
-  platformCollision = (platform) => {
-    const playerHorizontalSize = this.x + this.width;
-    const playerVerticalSize = this.y + this.height;
-
-    if (this.collision.x && this.collision.y) return;
-
-    if (!this.collision.y && playerHorizontalSize > platform.x && playerHorizontalSize < platform.x + platform.width) {
-      // if (this.y + this.height >= platform.y && this.y < platform.y + platform.height) {
-      if (this.y + this.height > platform.y && this.y < platform.y) {
-        this.y = platform.y - this.height;
-        this.collision.y = true;
-        return;
-      }
-
-      if (this.y < platform.y + platform.height && this.y > platform.y) {
-        this.y = platform.y + platform.height;
-        this.collision.y = true;
-        return;
-      }
-    }
-
-    if (this.collision.y && playerVerticalSize > platform.y && playerVerticalSize < platform.y + platform.height) {
-      if (this.x + this.width > platform.x && this.x < platform.x) {
-        this.x = platform.x - this.width;
-        this.collision.x = true;
-        return;
-      }
-
-      if (this.x < platform.x + platform.width && this.x > platform.x) {
-        this.x = platform.x + platform.width;
-        this.collision.x = true;
-        return;
+  collision = (platform) => {
+    if (isStaticIntersect(this.playerData, platform)) {
+      if (this.dx > 0 && this.x < platform.x) this.dx = 0;
+      if (this.dx < 0 && this.x + this.width > platform.x + platform.width) this.dx = 0;
+      if (this.dy > 0 && this.y < platform.y) this.dy = 0;
+      if (this.dy < 0 && this.y + this.height > platform.y + platform.height) {
+        this.dy = 0;
+        this.state.jumping = false;
       }
     }
   };
