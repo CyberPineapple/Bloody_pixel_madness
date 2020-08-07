@@ -45,10 +45,10 @@ export default class Bullet {
   collision = (platform) => {
     if (isStaticIntersect(this.bulletData, platform)) {
       if (
-        this.x < platform.x &&
-        this.x + this.width > platform.x + platform.width &&
-        this.y < platform.y &&
-        this.y + this.height > platform.y + platform.height
+        this.x > platform.x &&
+        this.x + this.width < platform.x + platform.width &&
+        this.y > platform.y &&
+        this.y + this.height < platform.y + platform.height
       ) {
         removeBullet(this.id);
         return;

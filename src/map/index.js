@@ -44,10 +44,8 @@ mapParser();
 
 export const mapObjects = walls.map((wall) => new Platform(wall));
 
-export const bulletArray = [];
+export let bulletArray = [];
 
 export const removeBullet = (id) => {
-  const index = bulletArray.findIndex((bullet) => bullet.id !== id);
-  console.log('index', index);
-  if (index !== -1) return bulletArray.splice(index, 1);
+  bulletArray = bulletArray.filter((bullet) => bullet.id !== id);
 };
