@@ -1,10 +1,13 @@
 import { isStaticIntersect } from '../../utils/collision';
+import { getUniqId } from '../../utils/helpers.js';
 import Bullet from '../Bullet/index.js';
 import GameStore from '../../store/index.js';
 
 export default class CurrentBullet extends Bullet {
-  constructor({ x, y, id, target }) {
-    super({ x, y, id, target });
+  constructor({ x, y, target }) {
+    super({ x, y, target });
+
+    this.id = getUniqId();
 
     this.dx = (target.y - this.y) / this.width;
     this.dy = (target.x - this.x) / this.height;
