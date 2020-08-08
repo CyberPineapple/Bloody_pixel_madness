@@ -5,16 +5,22 @@ import { isStaticIntersect } from '../utils/collision';
 import { gravity } from '../configs/index.js';
 
 export default class Player {
-  constructor({ x, y, color }) {
+  constructor({ x, y, id, color, isCurrentUser = false }) {
     (this.x = x || 50), (this.y = y || 50), (this.height = 20), (this.width = 20);
+    this.isCurrentUser = isCurrentUser;
 
+    this.params.color = isCurrentUser ? 'red' : 'white';
     if (color) this.params.color = color;
+
+    if (id) this.id = id;
 
     this.frameCounter = 0;
 
-    document.addEventListener('keydown', this.handleKeyDown);
-    document.addEventListener('keyup', this.handleKeyUp);
-    canvas.addEventListener('mousemove', this.handleMouseMove);
+    if (isCurrentUser) {
+      document.addEventListener('keydown', this.handleKeyDown);
+      document.addEventListener('keyup', this.handleKeyUp);
+      canvas.addEventListener('mousemove', this.handleMouseMove);
+    }
   }
 
   params = {
