@@ -1,4 +1,3 @@
-import Canvas from '../../utils/canvas.js';
 import BaseObject from '../BaseObject/index';
 
 export default class Platform extends BaseObject {
