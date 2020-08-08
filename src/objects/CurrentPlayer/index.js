@@ -1,10 +1,10 @@
 import Canvas from '../../utils/canvas.js';
-import { mapObjects, bulletArray } from '../../map/index.js';
 import CurrentBullet from '../CurrentBullet/index.js';
 import { isStaticIntersect } from '../../utils/collision';
 import { gravity } from '../../configs/index.js';
 import Player from '../Player/index';
 import Cursor from '../Cursor/index.js';
+import GameStore from '../../store/index.js';
 
 export default class CurrentPlayer extends Player {
   constructor({ x, y, id, color = 'red' }) {
@@ -79,13 +79,11 @@ export default class CurrentPlayer extends Player {
 
   fire = () => {
     if (this.utils.speedOfFireFramesCounter % this.params.speedOfFire === 0) {
-      bulletArray.push(
-        new CurrentBullet({
-          x: this.x,
-          y: this.y,
-          target: this.cursor.sizeData,
-        })
-      );
+      GameStore.addBullet({
+        x: this.x,
+        y: this.y,
+        target: this.cursor.sizeData,
+      });
     }
   };
 
@@ -113,7 +111,7 @@ export default class CurrentPlayer extends Player {
   };
 
   checkCollision = () => {
-    mapObjects.forEach((platform) => {
+    GameStore.platformList.forEach((platform) => {
       this.collision(platform.sizeData);
     });
   };

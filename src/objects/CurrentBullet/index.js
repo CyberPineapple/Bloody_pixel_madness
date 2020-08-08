@@ -1,6 +1,6 @@
-import { mapObjects, removeBullet } from '../../map/index.js';
 import { isStaticIntersect } from '../../utils/collision';
 import Bullet from '../Bullet/index.js';
+import GameStore from '../../store/index.js';
 
 let bulletCounter = 0;
 
@@ -34,7 +34,7 @@ export default class CurrentBullet extends Bullet {
   };
 
   checkCollision = () => {
-    mapObjects.forEach((platform) => {
+    GameStore.platformList.forEach((platform) => {
       this.collision(platform.sizeData);
     });
   };
@@ -52,7 +52,7 @@ export default class CurrentBullet extends Bullet {
           this.dy = -this.dy;
           this.state.bounce += 1;
         } else {
-          removeBullet(this.id);
+          GameStore.removeBullet(this.id);
         }
       }
     }

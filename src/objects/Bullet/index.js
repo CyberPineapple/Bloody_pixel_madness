@@ -1,4 +1,3 @@
-import { mapObjects, removeBullet } from '../../map/index.js';
 import { isStaticIntersect } from '../../utils/collision';
 import BaseObject from '../BaseObject/index.js';
 

@@ -1,13 +1,10 @@
-import CurrentPlayer from './src/objects/CurrentPlayer/index.js';
+import GameStore from './src/store/index.js';
 import Player from './src/objects/Player/index.js';
 import Canvas from './src/utils/canvas';
-import { mapObjects, bulletArray } from './src/map/index.js';
 
 const ws = new WebSocket('ws://localhost:8080');
 
 let isConnectedToServer = false;
-
-const player = new CurrentPlayer({ x: 100, y: 100 });
 
 let players = [];
 
@@ -18,8 +15,8 @@ ws.onopen = (message) => {
     JSON.stringify({
       type: 'player_register',
       data: {
-        x: player.x,
-        y: player.y,
+        x: GameStore.currentPlayer.x,
+        y: GameStore.currentPlayer.y,
       },
     })
   );
@@ -34,7 +31,7 @@ ws.onmessage = (response) => {
   const { type, data } = JSON.parse(response.data);
   switch (type) {
     case 'player_register': {
-      player.id = data.id;
+      GameStore.currentPlayer.id = data.id;
       players = data.players.map((playerData) => new Player({ ...playerData }));
       break;
     }
@@ -89,14 +86,14 @@ const gameTick = () => {
   window.requestAnimationFrame(gameTick);
   Canvas.context.clearRect(0, 0, Canvas.element.width, Canvas.element.height);
 
-  if (isConnectedToServer) sendPlayerCoords(player);
-  player.tick();
+  if (isConnectedToServer) sendPlayerCoords(GameStore.currentPlayer);
+  GameStore.currentPlayer.tick();
 
   players.forEach((player) => player.draw());
 
-  bulletArray.forEach((bullet) => bullet.tick());
+  GameStore.bulletList.forEach((bullet) => bullet.tick());
 
-  mapObjects.forEach((object) => object.draw());
+  GameStore.platformList.forEach((platform) => platform.draw());
 };
 
 window.requestAnimationFrame(gameTick);

@@ -1,7 +1,6 @@
-import Platform from '../objects/Platform/index.js';
 import Canvas from '../utils/canvas';
 
-const walls = [];
+const platforms = [];
 
 const map = [
   '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@',
@@ -30,7 +29,7 @@ const mapParser = () => {
       index: v.index,
     }));
     result.forEach((v) => {
-      walls.push({
+      platforms.push({
         x: v.index * blockXSize,
         width: v.length * blockXSize,
         y: i * blockYSize,
@@ -42,10 +41,4 @@ const mapParser = () => {
 
 mapParser();
 
-export const mapObjects = walls.map((wall) => new Platform(wall));
-
-export let bulletArray = [];
-
-export const removeBullet = (id) => {
-  bulletArray = bulletArray.filter((bullet) => bullet.id !== id);
-};
+export default platforms;
