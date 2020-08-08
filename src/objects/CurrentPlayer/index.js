@@ -114,7 +114,7 @@ export default class CurrentPlayer extends Player {
   };
 
   checkCollision = () => {
-    GameStore.platformList.forEach((platform) => {
+    [...GameStore.platformList, ...GameStore.playersList].forEach((platform) => {
       this.collision(platform.sizeData);
     });
   };
