@@ -6,8 +6,6 @@ let players = [];
 
 let bulletList = [];
 
-let bulletUniqId = 0;
-
 wss.on('connection', (ws) => {
   ws.on('message', (request) => {
     parseMessage(JSON.parse(request));
@@ -69,46 +67,70 @@ wss.on('connection', (ws) => {
             })
           );
         });
+        break;
       }
 
-      // case 'bullet_create': {
-      //   const newBullet = {
-      //     id: bulletUniqId++,
-      //     x: data.x,
-      //     y: data.y,
-      //   };
+      case 'bullet_create': {
+        const newBullet = {
+          id: data.id,
+          x: data.x,
+          y: data.y,
+        };
 
-      //   bulletList.push(newBullet);
+        bulletList.push(newBullet);
 
-      //   const playersListWithoutCurrentPlayer = players.filter((v) => v.player.id !== data.playerId);
-      //   const bulletListWithoutNewBullet = bulletList.filter((v) => v.id !== newBullet.id);
-      //   const currentPlayer = players.find((v) => v.player.id === data.playerId);
+        const playersListWithoutCurrentPlayer = players.filter((v) => v.player.id !== data.playerId);
+        const bulletListWithoutNewBullet = bulletList.filter((v) => v.id !== newBullet.id);
 
-      //   const response = {
-      //     type,
-      //     data: {
-      //       id: newBullet.id,
-      //       bullets: bulletListWithoutNewBullet,
-      //     },
-      //   };
+        playersListWithoutCurrentPlayer.forEach((player) => {
+          player.socket.send(
+            JSON.stringify({
+              type: 'bullet_add_new',
+              data: newBullet,
+            })
+          );
+        });
+      }
 
-      //   currentPlayer.socket.send(JSON.stringify(response));
+      case 'bullet_set_coords': {
+        const tempBullet = bulletList.find((v) => v.id === data.id);
+        if (!tempBullet) return;
+        tempBullet.x = data.x;
+        tempBullet.y = data.y;
 
-      //   playersListWithoutCurrentPlayer.forEach((player) => {
-      //     player.socket.send(
-      //       JSON.stringify({
-      //         type: 'bullet_add_new',
-      //         data: newBullet,
-      //       })
-      //     );
-      //   });
-      // }
+        const playersListWithoutCurrentPlayer = players.filter((v) => v.player.id !== data.id);
 
-      // case 'bullet_set_coords': {
-      // }
+        playersListWithoutCurrentPlayer.forEach((player) => {
+          player.socket.send(
+            JSON.stringify({
+              type: 'bullet_set_coords',
+              data: {
+                x: data.x,
+                y: data.y,
+                id: data.id,
+              },
+            })
+          );
+        });
+        break;
+      }
 
-      // case 'bullet_destroy': {
-      // }
+      case 'bullet_remove': {
+        bulletList = bulletList.filter((v) => v.id !== data.id);
+
+        const playersListWithoutCurrentPlayer = players.filter((v) => v.player.id !== data.id);
+
+        playersListWithoutCurrentPlayer.forEach((player) => {
+          player.socket.send(
+            JSON.stringify({
+              type: 'bullet_remove',
+              data: {
+                id: data.id,
+              },
+            })
+          );
+        });
+      }
 
       default:
         break;
