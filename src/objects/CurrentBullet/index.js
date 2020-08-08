@@ -2,15 +2,19 @@ import { isStaticIntersect } from '../../utils/collision';
 import { getUniqId } from '../../utils/helpers.js';
 import Bullet from '../Bullet/index.js';
 import GameStore from '../../store/index.js';
+import Socket from '../../utils/websocket.js';
 
 export default class CurrentBullet extends Bullet {
   constructor({ x, y, target }) {
-    super({ x, y, target });
-
-    this.id = getUniqId();
+    const id = getUniqId();
+    super({ x, y, id });
 
     this.dx = (target.y - this.y) / this.width;
     this.dy = (target.x - this.x) / this.height;
+
+    if (Socket.isConnected) {
+      Socket.createBullet({ ...this.sizeData, id: this.id, playerId: GameStore.currentPlayer.id });
+    }
   }
 
   state = {
@@ -24,6 +28,10 @@ export default class CurrentBullet extends Bullet {
   tick = () => {
     this.move();
     this.checkCollision();
+
+    if (Socket.isConnected) {
+      Socket.sendBulletCoordinats({ ...this.sizeData, id: this.id, playerId: GameStore.currentPlayer.id });
+    }
 
     this.draw();
   };
@@ -53,6 +61,9 @@ export default class CurrentBullet extends Bullet {
           this.state.bounce += 1;
         } else {
           GameStore.removeBullet(this.id);
+          if (Socket.isConnected) {
+            Socket.removeBullet({ id: this.id, playerId: GameStore.currentPlayer.id });
+          }
         }
       }
     }

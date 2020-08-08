@@ -10,6 +10,7 @@ class Socket {
     bullet_create: (data) => this.bulletCreate(data),
     bullet_add_new: (data) => this.bulletAddNew(data),
     bullet_set_coords: (data) => this.bulletSetCoordinats(data),
+    bullet_remove: (data) => this.bulletRemove(data),
   };
 
   connect = () => {
@@ -43,6 +44,9 @@ class Socket {
 
   playerAddNew = (data) => GameStore.addPlayer(data);
   playerSetCoordinats = (data) => GameStore.setPlayerCoordinats(data);
+  bulletAddNew = (data) => GameStore.addBulletOfAnotherPlayer(data);
+  bulletSetCoordinats = (data) => GameStore.setBulletCoordinats(data);
+  bulletRemove = (data) => GameStore.removeBulletOfAnotherPlayer(data);
 
   registerPlayerRequest = () => {
     this.send({
@@ -58,6 +62,27 @@ class Socket {
     this.send({
       type: 'player_set_coords',
       data: playerData,
+    });
+  };
+
+  sendBulletCoordinats = (bulletData) => {
+    this.send({
+      type: 'bullet_set_coords',
+      data: bulletData,
+    });
+  };
+
+  removeBullet = (bulletData) => {
+    this.send({
+      type: 'bullet_remove',
+      data: bulletData,
+    });
+  };
+
+  createBullet = (bulletData) => {
+    this.send({
+      type: 'bullet_create',
+      data: bulletData,
     });
   };
 }

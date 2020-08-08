@@ -12,6 +12,7 @@ const gameTick = () => {
 
   GameStore.playersList.forEach((player) => player.draw());
   GameStore.bulletListOfCurrentPlayer.forEach((bullet) => bullet.tick());
+  GameStore.bulletListOfAnotherPlayers.forEach((bullet) => bullet.draw());
   GameStore.platformList.forEach((platform) => platform.draw());
 };
 

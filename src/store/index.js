@@ -12,6 +12,7 @@ class GameStore {
     this.platformList = platforms.map((wall) => new Platform(wall));
 
     this.bulletListOfCurrentPlayer = [];
+    this.bulletListOfAnotherPlayers = [];
     this.playersList = [];
   }
 
@@ -34,6 +35,19 @@ class GameStore {
   setPlayerCoordinats = (playerData) => {
     const tempPlayer = this.playersList.find((v) => v.id === playerData.id);
     if (tempPlayer) tempPlayer.move(playerData);
+  };
+
+  setBulletCoordinats = (bulletData) => {
+    const tempBullet = this.bulletListOfAnotherPlayers.find((v) => v.id === bulletData.id);
+    if (tempBullet) tempBullet.move(bulletData);
+  };
+
+  addBulletOfAnotherPlayer = (bulletData) => {
+    this.bulletListOfAnotherPlayers.push(new Bullet(bulletData));
+  };
+
+  removeBulletOfAnotherPlayer = (bulletData) => {
+    this.bulletListOfAnotherPlayers = this.bulletListOfAnotherPlayers.filter((bullet) => bullet.id !== bulletData.id);
   };
 }
 
