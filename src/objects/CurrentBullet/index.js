@@ -2,13 +2,10 @@ import { isStaticIntersect } from '../../utils/collision';
 import Bullet from '../Bullet/index.js';
 import GameStore from '../../store/index.js';
 
-let bulletCounter = 0;
-
 export default class CurrentBullet extends Bullet {
-  constructor({ x, y, target }) {
-    super({ x, y, target });
+  constructor({ x, y, id, target }) {
+    super({ x, y, id, target });
 
-    this.id = bulletCounter++;
     this.dx = (target.y - this.y) / this.width;
     this.dy = (target.x - this.x) / this.height;
   }

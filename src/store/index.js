@@ -15,12 +15,15 @@ class GameStore {
     this.playersList = [];
   }
 
+  bulletCounter = 0;
+
   removeBullet = (id) => {
     this.bulletListOfCurrentPlayer = this.bulletListOfCurrentPlayer.filter((bullet) => bullet.id !== id);
   };
 
   addBullet = ({ x, y, target }) => {
-    this.bulletListOfCurrentPlayer.push(new CurrentBullet({ x, y, target }));
+    const id = this.bulletCounter++;
+    this.bulletListOfCurrentPlayer.push(new CurrentBullet({ x, y, id, target }));
   };
 
   setPlayers = (players) => {
