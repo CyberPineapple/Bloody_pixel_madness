@@ -1,5 +1,5 @@
-import Platform from '../objects/Platform.js';
-import { canvas } from '../utils/canvas';
+import Platform from '../objects/Platform/index.js';
+import Canvas from '../utils/canvas';
 
 const walls = [];
 
@@ -20,8 +20,8 @@ const map = [
 ];
 
 const mapParser = () => {
-  const blockXSize = Math.round(canvas.width / map[0].length);
-  const blockYSize = Math.round(canvas.height / map.length);
+  const blockXSize = Math.round(Canvas.element.width / map[0].length);
+  const blockYSize = Math.round(Canvas.element.height / map.length);
 
   for (let i = 0; i < map.length; i++) {
     let result = Array.from(map[i].matchAll(/@+/g));

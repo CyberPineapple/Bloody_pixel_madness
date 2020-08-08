@@ -1,7 +1,6 @@
-import ctx from '../utils/canvas.js';
-import { mapObjects, removeBullet } from '../map/index.js';
-import { isStaticIntersect } from '../utils/collision';
-import { gravity } from '../configs/index.js';
+import Canvas from '../../utils/canvas.js';
+import { mapObjects, removeBullet } from '../../map/index.js';
+import { isStaticIntersect } from '../../utils/collision';
 
 let bulletCounter = 0;
 
@@ -17,18 +16,23 @@ export default class Bullet {
     return { x: this.x, y: this.y, width: this.width, height: this.height };
   }
 
+  state = {
+    bounce: 0,
+  };
+
   params = {
     speed: 1,
     color: 'red',
+    maxBounceCount: 3,
   };
 
   draw = () => {
     this.move();
     this.checkCollision();
-    ctx.beginPath();
-    ctx.fillStyle = this.params.color;
-    ctx.fillRect(this.x, this.y, this.width, this.height);
-    ctx.closePath();
+    Canvas.context.beginPath();
+    Canvas.context.fillStyle = this.params.color;
+    Canvas.context.fillRect(this.x, this.y, this.width, this.height);
+    Canvas.context.closePath();
   };
 
   move = () => {
@@ -38,7 +42,7 @@ export default class Bullet {
 
   checkCollision = () => {
     mapObjects.forEach((platform) => {
-      this.collision(platform.params);
+      this.collision(platform.sizeData);
     });
   };
 
@@ -50,8 +54,13 @@ export default class Bullet {
         this.y > platform.y &&
         this.y + this.height < platform.y + platform.height
       ) {
-        removeBullet(this.id);
-        return;
+        if (this.state.bounce < this.params.maxBounceCount) {
+          this.dx = -this.dx;
+          this.dy = -this.dy;
+          this.state.bounce += 1;
+        } else {
+          removeBullet(this.id);
+        }
       }
     }
   };

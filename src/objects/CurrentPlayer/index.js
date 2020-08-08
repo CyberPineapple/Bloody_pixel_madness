@@ -1,32 +1,27 @@
-import ctx, { canvas } from '../utils/canvas.js';
-import { mapObjects, bulletArray } from '../map/index.js';
-import Bullet from './Bullet.js';
-import { isStaticIntersect } from '../utils/collision';
-import { gravity } from '../configs/index.js';
+import Canvas from '../../utils/canvas.js';
+import { mapObjects, bulletArray } from '../../map/index.js';
+import Bullet from '../Bullet/index.js';
+import { isStaticIntersect } from '../../utils/collision';
+import { gravity } from '../../configs/index.js';
+import Player from '../Player/index';
+import Cursor from '../Cursor/index.js';
 
-export default class Player {
-  constructor({ x, y, id, color, isCurrentUser = false }) {
-    (this.x = x || 50), (this.y = y || 50), (this.height = 20), (this.width = 20);
-    this.isCurrentUser = isCurrentUser;
-
-    this.params.color = isCurrentUser ? 'red' : 'white';
-    if (color) this.params.color = color;
-
-    if (id) this.id = id;
+export default class CurrentPlayer extends Player {
+  constructor({ x, y, id, color = 'red' }) {
+    super({ x, y, color, id });
 
     this.frameCounter = 0;
 
-    if (isCurrentUser) {
-      document.addEventListener('keydown', this.handleKeyDown);
-      document.addEventListener('keyup', this.handleKeyUp);
-      canvas.addEventListener('mousemove', this.handleMouseMove);
-    }
+    document.addEventListener('keydown', this.handleKeyDown);
+    document.addEventListener('keyup', this.handleKeyUp);
+    Canvas.element.addEventListener('mousemove', this.handleMouseMove);
+
+    this.cursor = new Cursor({ x, y });
   }
 
   params = {
     jumpHeight: 10,
     speed: 5,
-    color: 'white',
     speedOfFire: 10,
   };
 
@@ -38,33 +33,27 @@ export default class Player {
     jumping: false,
   };
 
-  cursor = {
-    x: 0,
-    y: 0,
-  };
-
   keyboardKeys = {};
-
-  get playerData() {
-    return { x: this.x, y: this.y, width: this.width, height: this.height };
-  }
 
   handleKeyDown = ({ code }) => (this.keyboardKeys[code] = true);
   handleKeyUp = ({ code }) => (this.keyboardKeys[code] = false);
   handleMouseMove = ({ clientX, clientY }) => {
-    this.cursor.x = clientX;
-    this.cursor.y = clientY;
+    this.cursor.move({
+      x: clientX,
+      y: clientY,
+    });
   };
 
-  clearMove = () => {
+  stopMove = () => {
     this.dx = 0;
     this.dy = 0;
   };
 
-  draw = () => {
-    this.clearMove();
+  tick = () => {
+    this.stopMove();
     this.gravityPhysics();
     this.utils.speedOfFireFramesCounter++;
+
     if (this.keyboardKeys.KeyA) this.runLeft();
     if (this.keyboardKeys.KeyD) this.runRight();
     if (this.keyboardKeys.KeyW) this.jump();
@@ -73,15 +62,10 @@ export default class Player {
     this.jumpInProgress();
     this.checkCollision();
     this.move();
-    ctx.beginPath();
-    ctx.fillStyle = this.params.color;
-    ctx.fillRect(this.x, this.y, this.width, this.height);
-    ctx.closePath();
 
-    ctx.beginPath();
-    ctx.fillStyle = 'green';
-    ctx.fillRect(this.cursor.x, this.cursor.y, 5, 5);
-    ctx.closePath();
+    this.draw();
+
+    this.cursor.draw();
   };
 
   runLeft = () => (this.dx = -this.params.speed);
@@ -98,7 +82,7 @@ export default class Player {
         new Bullet({
           x: this.x,
           y: this.y,
-          target: this.cursor,
+          target: this.cursor.sizeData,
         })
       );
     }
@@ -129,12 +113,12 @@ export default class Player {
 
   checkCollision = () => {
     mapObjects.forEach((platform) => {
-      this.collision(platform.params);
+      this.collision(platform.sizeData);
     });
   };
 
   collision = (platform) => {
-    if (isStaticIntersect(this.playerData, platform)) {
+    if (isStaticIntersect(this.sizeData, platform)) {
       if (this.dx > 0 && this.x < platform.x) this.dx = 0;
       if (this.dx < 0 && this.x + this.width > platform.x + platform.width) this.dx = 0;
       if (this.dy > 0 && this.y < platform.y) this.dy = 0;

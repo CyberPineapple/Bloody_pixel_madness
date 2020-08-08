@@ -1,9 +1,14 @@
-export const canvas = document.querySelector('#canvas');
+const canvas = document.querySelector('#canvas');
 
 canvas.width = 640;
 canvas.height = 480;
 canvas.style.backgroundColor = 'black';
 
-const ctx = canvas.getContext('2d');
+const context = canvas.getContext('2d');
 
-export default ctx;
+const Canvas = {
+  element: canvas,
+  context,
+};
+
+export default Canvas;

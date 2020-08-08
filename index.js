@@ -1,16 +1,18 @@
-import Player from './src/objects/Player';
-import ctx from './src/utils/canvas';
+import CurrentPlayer from './src/objects/CurrentPlayer/index.js';
+import Player from './src/objects/Player/index.js';
+import Canvas from './src/utils/canvas';
 import { mapObjects, bulletArray } from './src/map/index.js';
 
 const ws = new WebSocket('ws://localhost:8080');
 
 let isConnectedToServer = false;
 
-const player = new Player({ isCurrentUser: true });
+const player = new CurrentPlayer({ x: 100, y: 100 });
 
 let players = [];
 
 ws.onopen = (message) => {
+  // return;
   isConnectedToServer = true;
   ws.send(
     JSON.stringify({
@@ -44,8 +46,7 @@ ws.onmessage = (response) => {
 
     case 'player_set_coords': {
       const tempPlayer = players.find((v) => v.id === data.id);
-      tempPlayer.x = data.x;
-      tempPlayer.y = data.y;
+      tempPlayer.move(data);
       break;
     }
 
@@ -86,10 +87,10 @@ const sendPlayerCoords = (player) => {
 
 const gameTick = () => {
   window.requestAnimationFrame(gameTick);
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  Canvas.context.clearRect(0, 0, Canvas.element.width, Canvas.element.height);
 
-  player.draw();
   if (isConnectedToServer) sendPlayerCoords(player);
+  player.tick();
 
   players.forEach((player) => player.draw());
 
