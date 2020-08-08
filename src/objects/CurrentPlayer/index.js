@@ -5,6 +5,7 @@ import { gravity } from '../../configs/index.js';
 import Player from '../Player/index';
 import Cursor from '../Cursor/index.js';
 import GameStore from '../../store/index.js';
+import Socket from '../../utils/websocket.js';
 
 export default class CurrentPlayer extends Player {
   constructor({ x, y, id, color = 'red' }) {
@@ -63,6 +64,8 @@ export default class CurrentPlayer extends Player {
     this.jumpInProgress();
     this.checkCollision();
     this.move();
+
+    if (Socket.isConnected && this.id) Socket.sendPlayerCoordinats({ ...this.sizeData, id: this.id });
 
     this.draw();
 

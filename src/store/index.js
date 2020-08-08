@@ -1,5 +1,7 @@
 import CurrentPlayer from '../objects/CurrentPlayer/index.js';
 import CurrentBullet from '../objects/CurrentBullet/index.js';
+import Player from '../objects/Player/index.js';
+import Bullet from '../objects/Bullet/index.js';
 import Platform from '../objects/Platform/index.js';
 import platforms from '../map/index.js';
 
@@ -9,15 +11,29 @@ class GameStore {
 
     this.platformList = platforms.map((wall) => new Platform(wall));
 
-    this.bulletList = [];
+    this.bulletListOfCurrentPlayer = [];
+    this.playersList = [];
   }
 
   removeBullet = (id) => {
-    this.bulletList = this.bulletList.filter((bullet) => bullet.id !== id);
+    this.bulletListOfCurrentPlayer = this.bulletListOfCurrentPlayer.filter((bullet) => bullet.id !== id);
   };
 
   addBullet = ({ x, y, target }) => {
-    this.bulletList.push(new CurrentBullet({ x, y, target }));
+    this.bulletListOfCurrentPlayer.push(new CurrentBullet({ x, y, target }));
+  };
+
+  setPlayers = (players) => {
+    this.playersList = players.map((playerData) => new Player({ ...playerData }));
+  };
+
+  addPlayer = (playerData) => {
+    this.playersList.push(new Player(playerData));
+  };
+
+  setPlayerCoordinats = (playerData) => {
+    const tempPlayer = this.playersList.find((v) => v.id === playerData.id);
+    if (tempPlayer) tempPlayer.move(playerData);
   };
 }
 
