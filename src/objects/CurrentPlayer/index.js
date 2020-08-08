@@ -1,6 +1,6 @@
 import Canvas from '../../utils/canvas.js';
 import { mapObjects, bulletArray } from '../../map/index.js';
-import Bullet from '../Bullet/index.js';
+import CurrentBullet from '../CurrentBullet/index.js';
 import { isStaticIntersect } from '../../utils/collision';
 import { gravity } from '../../configs/index.js';
 import Player from '../Player/index';
@@ -37,6 +37,7 @@ export default class CurrentPlayer extends Player {
 
   handleKeyDown = ({ code }) => (this.keyboardKeys[code] = true);
   handleKeyUp = ({ code }) => (this.keyboardKeys[code] = false);
+
   handleMouseMove = ({ clientX, clientY }) => {
     this.cursor.move({
       x: clientX,
@@ -79,7 +80,7 @@ export default class CurrentPlayer extends Player {
   fire = () => {
     if (this.utils.speedOfFireFramesCounter % this.params.speedOfFire === 0) {
       bulletArray.push(
-        new Bullet({
+        new CurrentBullet({
           x: this.x,
           y: this.y,
           target: this.cursor.sizeData,

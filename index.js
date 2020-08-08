@@ -94,7 +94,7 @@ const gameTick = () => {
 
   players.forEach((player) => player.draw());
 
-  bulletArray.forEach((bullet) => bullet.draw());
+  bulletArray.forEach((bullet) => bullet.tick());
 
   mapObjects.forEach((object) => object.draw());
 };
