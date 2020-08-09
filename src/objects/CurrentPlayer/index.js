@@ -16,6 +16,7 @@ export default class CurrentPlayer extends Player {
     document.addEventListener('keydown', this.handleKeyDown);
     document.addEventListener('keyup', this.handleKeyUp);
     Canvas.element.addEventListener('mousemove', this.handleMouseMove);
+    Canvas.element.addEventListener('click', this.fire);
 
     this.cursor = new Cursor({ x, y });
   }
@@ -59,7 +60,7 @@ export default class CurrentPlayer extends Player {
     if (this.keyboardKeys.KeyA) this.runLeft();
     if (this.keyboardKeys.KeyD) this.runRight();
     if (this.keyboardKeys.KeyW) this.jump();
-    if (this.keyboardKeys.Space) this.fire();
+    if (this.keyboardKeys.Space) this.autofire();
 
     this.jumpInProgress();
     this.checkCollision();
@@ -80,14 +81,16 @@ export default class CurrentPlayer extends Player {
     this.y += this.dy;
   };
 
+  autofire = () => {
+    if (this.utils.speedOfFireFramesCounter % this.params.speedOfFire === 0) this.fire();
+  };
+
   fire = () => {
-    if (this.utils.speedOfFireFramesCounter % this.params.speedOfFire === 0) {
-      GameStore.addBullet({
-        x: this.x,
-        y: this.y,
-        target: this.cursor.sizeData,
-      });
-    }
+    GameStore.addBullet({
+      x: this.x,
+      y: this.y,
+      target: this.cursor.sizeData,
+    });
   };
 
   jump = () => {
