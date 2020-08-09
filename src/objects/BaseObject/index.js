@@ -13,10 +13,26 @@ export default class BaseObject {
     return { x: this.x, y: this.y, width: this.width, height: this.height };
   }
 
-  draw = () => {
+  get xl() {
+    return this.x + this.width;
+  }
+
+  get yl() {
+    return this.y + this.height;
+  }
+
+  get centerX() {
+    return this.x + this.width / 2;
+  }
+
+  get centerY() {
+    return this.y + this.height / 2;
+  }
+
+  draw() {
     Canvas.context.beginPath();
     Canvas.context.fillStyle = this.color;
     Canvas.context.fillRect(this.x, this.y, this.width, this.height);
     Canvas.context.closePath();
-  };
+  }
 }

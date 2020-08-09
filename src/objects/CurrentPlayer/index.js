@@ -8,7 +8,7 @@ import GameStore from '../../store/index.js';
 import Socket from '../../utils/websocket.js';
 
 export default class CurrentPlayer extends Player {
-  constructor({ x, y, id, color = 'red' }) {
+  constructor({ x, y, id, color = 'blue' }) {
     super({ x, y, color, id });
 
     this.frameCounter = 0;
@@ -73,8 +73,15 @@ export default class CurrentPlayer extends Player {
     this.cursor.draw();
   };
 
-  runLeft = () => (this.dx = -this.params.speed);
-  runRight = () => (this.dx = this.params.speed);
+  runLeft = () => {
+    this.dx = -this.params.speed;
+    this.movementDirection = 'left';
+  };
+
+  runRight = () => {
+    this.dx = this.params.speed;
+    this.movementDirection = 'right';
+  };
 
   move = () => {
     this.x += this.dx;
