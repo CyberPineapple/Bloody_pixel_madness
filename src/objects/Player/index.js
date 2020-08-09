@@ -19,6 +19,21 @@ export default class Player extends BaseObject {
     width: Math.round(this.width / 10),
   };
 
+  gun = {
+    color: 'brown',
+    height: Math.round(this.height / 5),
+    width: this.width,
+    marginTop: Math.round(this.height / 1.5),
+  };
+
+  get isLeftDirection() {
+    return this.movementDirection === 'left';
+  }
+
+  get isRightDirection() {
+    return this.movementDirection === 'right';
+  }
+
   move = ({ x, y }) => {
     this.y = y;
     if (this.x === x) return;
@@ -31,7 +46,8 @@ export default class Player extends BaseObject {
 
     Canvas.context.beginPath();
     Canvas.context.fillStyle = this.eyes.color;
-    if (this.movementDirection === 'left') {
+    if (this.isLeftDirection) {
+      // draw eyes
       Canvas.context.fillRect(
         this.x - this.eyes.width,
         this.y + this.eyes.marginTop,
@@ -44,9 +60,21 @@ export default class Player extends BaseObject {
         this.eyes.width,
         this.eyes.heigth
       );
+      // draw gun
+      Canvas.context.fillStyle = this.gun.color;
+      Canvas.context.fillRect(
+        this.centerX - this.gun.width,
+        this.y + this.gun.marginTop,
+        this.gun.width,
+        this.gun.height
+      );
     } else {
+      // draw eyes
       Canvas.context.fillRect(this.xl, this.y + this.eyes.marginTop, this.eyes.width, this.eyes.heigth);
       Canvas.context.fillRect(this.centerX, this.y + this.eyes.marginTop, this.eyes.width, this.eyes.heigth);
+      // draw gun
+      Canvas.context.fillStyle = this.gun.color;
+      Canvas.context.fillRect(this.centerX, this.y + this.gun.marginTop, this.gun.width, this.gun.height);
     }
     Canvas.context.closePath();
   }
