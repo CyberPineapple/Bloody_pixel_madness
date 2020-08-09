@@ -8,12 +8,12 @@ const gameTick = () => {
   window.requestAnimationFrame(gameTick);
   Canvas.context.clearRect(0, 0, Canvas.element.width, Canvas.element.height);
 
-  GameStore.currentPlayer.tick();
-
-  GameStore.playersList.forEach((player) => player.draw());
   GameStore.bulletListOfCurrentPlayer.forEach((bullet) => bullet.tick());
   GameStore.bulletListOfAnotherPlayers.forEach((bullet) => bullet.draw());
   GameStore.platformList.forEach((platform) => platform.draw());
+  GameStore.playersList.forEach((player) => player.draw());
+
+  GameStore.currentPlayer.tick();
 };
 
 window.requestAnimationFrame(gameTick);
