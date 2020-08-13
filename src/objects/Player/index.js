@@ -1,4 +1,5 @@
 import BaseObject from '../BaseObject/index';
+import Gun from '../Gun/index';
 import Canvas from '../../utils/canvas.js';
 
 export default class Player extends BaseObject {
@@ -12,18 +13,15 @@ export default class Player extends BaseObject {
     this.movementDirection = 'right';
   }
 
+  inventary = {
+    gun: new Gun({ x: this.x, y: this.y, direction: this.movementDirection }),
+  };
+
   eyes = {
     color: 'white',
     marginTop: Math.round(this.height / 10),
     heigth: Math.round(this.height / 3),
     width: Math.round(this.width / 10),
-  };
-
-  gun = {
-    color: 'brown',
-    height: Math.round(this.height / 5),
-    width: this.width,
-    marginTop: Math.round(this.height / 1.5),
   };
 
   get isLeftDirection() {
@@ -60,22 +58,20 @@ export default class Player extends BaseObject {
         this.eyes.width,
         this.eyes.heigth
       );
-      // draw gun
-      Canvas.context.fillStyle = this.gun.color;
-      Canvas.context.fillRect(
-        this.centerX - this.gun.width,
-        this.y + this.gun.marginTop,
-        this.gun.width,
-        this.gun.height
-      );
     } else {
       // draw eyes
       Canvas.context.fillRect(this.xl, this.y + this.eyes.marginTop, this.eyes.width, this.eyes.heigth);
       Canvas.context.fillRect(this.centerX, this.y + this.eyes.marginTop, this.eyes.width, this.eyes.heigth);
-      // draw gun
-      Canvas.context.fillStyle = this.gun.color;
-      Canvas.context.fillRect(this.centerX, this.y + this.gun.marginTop, this.gun.width, this.gun.height);
     }
     Canvas.context.closePath();
+
+    for (let key in this.inventary) {
+      this.inventary[key].move({
+        x: this.x,
+        y: this.y,
+        direction: this.movementDirection,
+      });
+      this.inventary[key].draw();
+    }
   }
 }

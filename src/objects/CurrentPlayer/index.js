@@ -16,7 +16,6 @@ export default class CurrentPlayer extends Player {
     document.addEventListener('keydown', this.handleKeyDown);
     document.addEventListener('keyup', this.handleKeyUp);
     Canvas.element.addEventListener('mousemove', this.handleMouseMove);
-    Canvas.element.addEventListener('click', this.fire);
 
     this.cursor = new Cursor({ x, y });
   }
@@ -24,15 +23,14 @@ export default class CurrentPlayer extends Player {
   params = {
     jumpHeight: 10,
     speed: 5,
-    speedOfFire: 10,
-  };
-
-  utils = {
-    speedOfFireFramesCounter: 0,
   };
 
   state = {
     jumping: false,
+  };
+
+  activeObjects = {
+    Space: (target) => this.inventary.gun.use(target),
   };
 
   keyboardKeys = {};
@@ -55,12 +53,11 @@ export default class CurrentPlayer extends Player {
   tick = () => {
     this.stopMove();
     this.gravityPhysics();
-    this.utils.speedOfFireFramesCounter++;
 
     if (this.keyboardKeys.KeyA) this.runLeft();
     if (this.keyboardKeys.KeyD) this.runRight();
     if (this.keyboardKeys.KeyW) this.jump();
-    if (this.keyboardKeys.Space) this.autofire();
+    if (this.keyboardKeys.Space) this.activeObjects.Space(this.cursor.sizeData);
 
     this.jumpInProgress();
     this.checkCollision();
@@ -86,18 +83,6 @@ export default class CurrentPlayer extends Player {
   move = () => {
     this.x += this.dx;
     this.y += this.dy;
-  };
-
-  autofire = () => {
-    if (this.utils.speedOfFireFramesCounter % this.params.speedOfFire === 0) this.fire();
-  };
-
-  fire = () => {
-    GameStore.addBullet({
-      x: this.x,
-      y: this.y,
-      target: this.cursor.sizeData,
-    });
   };
 
   jump = () => {
