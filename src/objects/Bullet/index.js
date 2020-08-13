@@ -9,6 +9,8 @@ export default class Bullet extends BaseObject {
 
     super({ x, y, width, height, color });
     if (id) this.id = id;
+
+    new Audio('./assets/sounds/fire.mp3').play();
   }
 
   move = ({ x, y }) => {
