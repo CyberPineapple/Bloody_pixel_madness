@@ -63,8 +63,8 @@ export default class CurrentPlayer extends Player {
     if (this.keyboardKeys.Space) this.activeObjects.Space(this.cursor.sizeData);
 
     this.jumpPhysics();
-    this.checkCollision();
     this.move();
+    this.checkCollision();
 
     if (Socket.isConnected && this.id) Socket.sendPlayerCoordinats({ ...this.sizeData, id: this.id });
 
@@ -104,20 +104,24 @@ export default class CurrentPlayer extends Player {
 
   checkCollision = () => {
     [...GameStore.platformList, ...GameStore.playersList].forEach((platform) => {
-      this.collision(platform.sizeData);
+      this.collision(platform);
     });
   };
 
   collision = (platform) => {
-    if (isStaticIntersect(this.sizeData, platform)) {
-      if (this.dx > 0 && this.x < platform.x) this.dx = 0;
-      if (this.dx < 0 && this.x + this.width > platform.x + platform.width) this.dx = 0;
+    if (isStaticIntersect(this.sizeData, platform.sizeData)) {
+      if (this.dx > 0 && this.x < platform.x) {
+        this.x = platform.x - this.width;
+      }
+      if (this.dx < 0 && this.x + this.width > platform.x + platform.width) {
+        this.x = platform.x + platform.width;
+      }
       if (this.dy > 0 && this.y < platform.y) {
-        this.dy = 0;
+        this.y = platform.y - this.height;
         this.state.isMayJump = true;
       }
       if (this.dy < 0 && this.y + this.height > platform.y + platform.height) {
-        this.dy = 0;
+        this.y = platform.y + platform.height;
       }
     }
   };
