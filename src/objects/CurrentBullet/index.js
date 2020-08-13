@@ -22,7 +22,7 @@ export default class CurrentBullet extends Bullet {
   };
 
   params = {
-    maxBounceCount: 3,
+    maxBounceCount: 7,
   };
 
   tick = () => {
@@ -49,23 +49,34 @@ export default class CurrentBullet extends Bullet {
 
   collision = (platform) => {
     if (isStaticIntersect(this.sizeData, platform)) {
-      if (
-        this.x > platform.x &&
-        this.x + this.width < platform.x + platform.width &&
-        this.y > platform.y &&
-        this.y + this.height < platform.y + platform.height
-      ) {
+      if (this.y > platform.y && this.y + this.height < platform.y + platform.height) {
+        if (this.state.bounce < this.params.maxBounceCount) {
+          this.dy = -this.dy;
+          this.incrementBounce();
+        } else {
+          this.removeBullet();
+          return;
+        }
+      }
+
+      if (this.x > platform.x && this.x + this.width < platform.x + platform.width) {
         if (this.state.bounce < this.params.maxBounceCount) {
           this.dx = -this.dx;
-          this.dy = -this.dy;
-          this.state.bounce += 1;
+          this.incrementBounce();
         } else {
-          GameStore.removeBullet(this.id);
-          if (Socket.isConnected) {
-            Socket.removeBullet({ id: this.id, playerId: GameStore.currentPlayer.id });
-          }
+          this.removeBullet();
+          return;
         }
       }
     }
   };
+
+  removeBullet = () => {
+    GameStore.removeBullet(this.id);
+    if (Socket.isConnected) {
+      Socket.removeBullet({ id: this.id, playerId: GameStore.currentPlayer.id });
+    }
+  };
+
+  incrementBounce = () => (this.state.bounce += 1);
 }
