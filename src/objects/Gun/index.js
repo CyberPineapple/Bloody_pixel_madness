@@ -31,7 +31,7 @@ export default class Gun extends BaseObject {
   use = (target) => {
     if (!this.state.isMayUse) return;
     GameStore.addBullet({
-      x: this.x + this.getDirectionOffset,
+      x: this.centerX + this.getDirectionOffset,
       y: this.y,
       target,
     });
