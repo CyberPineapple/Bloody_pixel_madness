@@ -43,6 +43,7 @@ export default class CurrentPlayer extends Player {
       x: clientX,
       y: clientY,
     });
+    this.movementDirection = this.centerX > clientX ? 'left' : 'right';
   };
 
   stopMove = () => {
@@ -70,10 +71,8 @@ export default class CurrentPlayer extends Player {
     this.cursor.draw();
   };
 
-  runLeft = () => {
-    this.dx = -this.params.speed;
-    this.movementDirection = 'left';
-  };
+  runLeft = () => (this.dx = -this.params.speed);
+  runRight = () => (this.dx = this.params.speed);
 
   runRight = () => {
     this.dx = this.params.speed;
