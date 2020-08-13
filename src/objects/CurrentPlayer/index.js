@@ -21,12 +21,13 @@ export default class CurrentPlayer extends Player {
   }
 
   params = {
-    jumpHeight: 10,
+    jumpHeight: 15,
+    jumpSpeed: 3,
     speed: 5,
   };
 
   state = {
-    jumping: false,
+    isMayJump: true,
   };
 
   activeObjects = {
@@ -34,6 +35,7 @@ export default class CurrentPlayer extends Player {
   };
 
   keyboardKeys = {};
+  frameCounter = 0;
 
   handleKeyDown = ({ code }) => (this.keyboardKeys[code] = true);
   handleKeyUp = ({ code }) => (this.keyboardKeys[code] = false);
@@ -60,7 +62,7 @@ export default class CurrentPlayer extends Player {
     if (this.keyboardKeys.KeyW) this.jump();
     if (this.keyboardKeys.Space) this.activeObjects.Space(this.cursor.sizeData);
 
-    this.jumpInProgress();
+    this.jumpPhysics();
     this.checkCollision();
     this.move();
 
@@ -74,32 +76,25 @@ export default class CurrentPlayer extends Player {
   runLeft = () => (this.dx = -this.params.speed);
   runRight = () => (this.dx = this.params.speed);
 
-  runRight = () => {
-    this.dx = this.params.speed;
-    this.movementDirection = 'right';
-  };
-
   move = () => {
     this.x += this.dx;
     this.y += this.dy;
   };
 
   jump = () => {
-    if (this.state.jumping) return;
-    this.state.jumping = true;
-  };
-
-  jumpInProgress = () => {
-    if (this.state.jumping) {
-      if (this.frameCounter % this.params.jumpHeight === 0) this.stopJumping();
-      this.frameCounter++;
-      this.dy = -gravity;
-    }
-  };
-
-  stopJumping = () => {
-    this.state.jumping = false;
+    if (!this.state.isMayJump) return;
+    this.state.isMayJump = false;
     this.frameCounter = 0;
+  };
+
+  jumpPhysics = () => {
+    if (this.state.isMayJump) return;
+    if (this.frameCounter >= this.params.jumpHeight) {
+      this.dy = gravity;
+    } else {
+      this.frameCounter++;
+      this.dy = -gravity - this.params.jumpSpeed;
+    }
   };
 
   gravityPhysics = () => {
@@ -117,10 +112,12 @@ export default class CurrentPlayer extends Player {
     if (isStaticIntersect(this.sizeData, platform)) {
       if (this.dx > 0 && this.x < platform.x) this.dx = 0;
       if (this.dx < 0 && this.x + this.width > platform.x + platform.width) this.dx = 0;
-      if (this.dy > 0 && this.y < platform.y) this.dy = 0;
+      if (this.dy > 0 && this.y < platform.y) {
+        this.dy = 0;
+        this.state.isMayJump = true;
+      }
       if (this.dy < 0 && this.y + this.height > platform.y + platform.height) {
         this.dy = 0;
-        this.state.jumping = false;
       }
     }
   };
