@@ -17,6 +17,10 @@ export default class Gun extends BaseObject {
     isMayUse: true,
   };
 
+  params = {
+    speed: 100,
+  };
+
   get getDirectionOffset() {
     return this.direction === 'left' ? -this.dx : this.dx;
   }
@@ -39,6 +43,6 @@ export default class Gun extends BaseObject {
     this.state.isMayUse = false;
     setTimeout(() => {
       this.state.isMayUse = true;
-    }, 100);
+    }, this.params.speed);
   };
 }
