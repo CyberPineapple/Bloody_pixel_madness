@@ -9,8 +9,10 @@ export default class CurrentBullet extends Bullet {
     const id = getUniqId();
     super({ x, y, id });
 
-    this.dx = (target.y - this.y) / this.width;
-    this.dy = (target.x - this.x) / this.height;
+    const vectorLength = Math.sqrt(Math.pow(target.x - this.x, 2) + Math.pow(target.y - this.y, 2));
+
+    this.dx = (target.y - this.y) / vectorLength;
+    this.dy = (target.x - this.x) / vectorLength;
 
     if (Socket.isConnected) {
       Socket.createBullet({ ...this.sizeData, id: this.id, playerId: GameStore.currentPlayer.id });
@@ -23,6 +25,7 @@ export default class CurrentBullet extends Bullet {
 
   params = {
     maxBounceCount: 7,
+    speed: 5,
   };
 
   tick = () => {
@@ -37,8 +40,8 @@ export default class CurrentBullet extends Bullet {
   };
 
   move = () => {
-    this.x += this.dy / 2;
-    this.y += this.dx / 2;
+    this.x += this.dy * this.params.speed;
+    this.y += this.dx * this.params.speed;
   };
 
   checkCollision = () => {
