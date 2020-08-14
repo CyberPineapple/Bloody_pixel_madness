@@ -11,6 +11,7 @@ export default class Player extends BaseObject {
     if (id) this.id = id;
 
     this.movementDirection = 'right';
+    this.HP = 100;
   }
 
   inventary = {
@@ -41,6 +42,11 @@ export default class Player extends BaseObject {
 
   draw() {
     super.draw();
+
+    Canvas.context.beginPath();
+    Canvas.context.fillStyle = 'red';
+    Canvas.context.fillRect(this.x, this.y - 5, this.HP * 0.2, 2);
+    Canvas.context.closePath();
 
     Canvas.context.beginPath();
     Canvas.context.fillStyle = this.eyes.color;
@@ -74,4 +80,13 @@ export default class Player extends BaseObject {
       this.inventary[key].draw();
     }
   }
+
+  death = () => {
+    this.color = 'red';
+  };
+
+  addDamage = (damage) => {
+    this.HP -= damage;
+    if (this.HP <= 0) this.death();
+  };
 }

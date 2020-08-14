@@ -42,13 +42,13 @@ export default class CurrentBullet extends Bullet {
   };
 
   checkCollision = () => {
-    GameStore.platformList.forEach((platform) => {
-      this.collision(platform.sizeData);
-    });
+    GameStore.platformList.forEach(this.collisionPlatform);
+    GameStore.playersList.forEach(this.collisionPlayer);
+    this.collisionPlayer(GameStore.currentPlayer);
   };
 
-  collision = (platform) => {
-    if (isStaticIntersect(this.sizeData, platform)) {
+  collisionPlatform = (platform) => {
+    if (isStaticIntersect(this.sizeData, platform.sizeData)) {
       if (this.y > platform.y && this.y + this.height < platform.y + platform.height) {
         if (this.state.bounce < this.params.maxBounceCount) {
           this.dy = -this.dy;
@@ -67,6 +67,20 @@ export default class CurrentBullet extends Bullet {
           this.removeBullet();
           return;
         }
+      }
+    }
+  };
+
+  collisionPlayer = (player) => {
+    if (isStaticIntersect(this.sizeData, player.sizeData)) {
+      if (
+        this.y > player.y &&
+        this.y + this.height < player.y + player.height &&
+        this.x > player.x &&
+        this.x + this.width < player.x + player.width
+      ) {
+        this.removeBullet();
+        player.addDamage(10);
       }
     }
   };
