@@ -73,7 +73,13 @@ export default class CurrentPlayer extends Player {
     this.move();
     this.checkCollision();
 
-    if (Socket.isConnected && this.id) Socket.sendPlayerCoordinats({ ...this.sizeData, id: this.id });
+    if (Socket.isConnected && this.id)
+      Socket.sendPlayerCoordinats({
+        x: this.x,
+        y: this.y,
+        direction: this.movementDirection,
+        id: this.id,
+      });
 
     this.draw();
 

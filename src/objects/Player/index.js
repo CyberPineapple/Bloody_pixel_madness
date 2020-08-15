@@ -38,11 +38,10 @@ export default class Player extends BaseObject {
     return (this.HP * this.width) / 100;
   }
 
-  move = ({ x, y }) => {
+  move = ({ x, y, direction }) => {
     this.y = y;
-    if (this.x === x) return;
-    this.movementDirection = this.x > x ? 'left' : 'right';
     this.x = x;
+    if (direction) this.movementDirection = direction;
   };
 
   draw() {
