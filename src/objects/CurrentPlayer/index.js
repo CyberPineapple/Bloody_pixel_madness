@@ -1,6 +1,6 @@
 import Canvas from '../../utils/canvas.js';
 import CurrentBullet from '../CurrentBullet/index.js';
-import { isStaticIntersect } from '../../utils/collision';
+import { isStaticIntersect, platformCollision } from '../../utils/collision';
 import { gravity } from '../../configs/index.js';
 import Player from '../Player/index';
 import Cursor from '../Cursor/index.js';
@@ -114,27 +114,9 @@ export default class CurrentPlayer extends Player {
   };
 
   checkCollision = () => {
-    GameStore.platformList.forEach(this.collision);
-    GameStore.playersList.forEach(this.collision);
+    GameStore.platformList.forEach((platform) => platformCollision(platform, this));
+    GameStore.playersList.forEach((player) => platformCollision(player, this));
     GameStore.bonusList.forEach(this.collisionBonus);
-  };
-
-  collision = (platform) => {
-    if (isStaticIntersect(this.sizeData, platform.sizeData)) {
-      if (this.dx > 0 && this.x < platform.x) {
-        this.x = platform.x - this.width;
-      }
-      if (this.dx < 0 && this.x + this.width > platform.x + platform.width) {
-        this.x = platform.x + platform.width;
-      }
-      if (this.dy > 0 && this.y < platform.y) {
-        this.y = platform.y - this.height;
-        this.state.isMayJump = true;
-      }
-      if (this.dy < 0 && this.y + this.height > platform.y + platform.height) {
-        this.y = platform.y + platform.height;
-      }
-    }
   };
 
   collisionBonus = (bonus) => {

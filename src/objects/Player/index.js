@@ -12,6 +12,7 @@ export default class Player extends BaseObject {
 
     this.movementDirection = 'right';
     this.HP = 100;
+    this.isPlayer = true;
   }
 
   inventory = {

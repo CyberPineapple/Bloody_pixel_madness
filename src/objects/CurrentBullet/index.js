@@ -45,12 +45,12 @@ export default class CurrentBullet extends Bullet {
   };
 
   checkCollision = () => {
-    GameStore.platformList.forEach(this.collisionPlatform);
-    GameStore.playersList.forEach(this.collisionPlayer);
-    this.collisionPlayer(GameStore.currentPlayer);
+    GameStore.platformList.forEach(this.platformCollision);
+    GameStore.playersList.forEach(this.playerCollision);
+    this.playerCollision(GameStore.currentPlayer);
   };
 
-  collisionPlatform = (platform) => {
+  platformCollision = (platform) => {
     if (isStaticIntersect(this.sizeData, platform.sizeData)) {
       if (this.y > platform.y && this.y + this.height < platform.y + platform.height) {
         if (this.state.bounce < this.params.maxBounceCount) {
@@ -74,7 +74,7 @@ export default class CurrentBullet extends Bullet {
     }
   };
 
-  collisionPlayer = (player) => {
+  playerCollision = (player) => {
     if (isStaticIntersect(this.sizeData, player.sizeData)) {
       if (
         this.y > player.y &&

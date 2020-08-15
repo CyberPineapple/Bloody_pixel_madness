@@ -1,6 +1,9 @@
 import BaseObject from '../BaseObject/index';
+import { gravity } from '../../configs/index.js';
 import { getUniqId } from '../../utils/helpers.js';
 import Canvas from '../../utils/canvas.js';
+import { platformCollision } from '../../utils/collision.js';
+import GameStore from '../../store/index.js';
 
 export default class Bonus extends BaseObject {
   constructor({ x, y, type }) {
@@ -11,6 +14,8 @@ export default class Bonus extends BaseObject {
 
     this.id = getUniqId();
     this.type = type || 'speed';
+    this.dx = 0;
+    this.dy = 0;
   }
 
   typesBonus = {
@@ -22,6 +27,32 @@ export default class Bonus extends BaseObject {
   use = (player) => {
     this.player = player;
     this.typesBonus[this.type](player);
+  };
+
+  gravityPhysics = () => {
+    this.dy = gravity;
+  };
+
+  move = () => {
+    this.y += this.dy;
+    this.x += this.dx;
+  };
+
+  stopMove = () => {
+    this.dx = 0;
+    this.dy = 0;
+  };
+
+  checkCollision = () => {
+    GameStore.platformList.forEach((platform) => platformCollision(platform, this));
+  };
+
+  tick = () => {
+    this.stopMove();
+    this.gravityPhysics();
+    this.move();
+    this.checkCollision();
+    this.draw();
   };
 
   deactivateBonus = () => {
