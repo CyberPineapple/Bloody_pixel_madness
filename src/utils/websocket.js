@@ -11,10 +11,13 @@ class Socket {
     bullet_add_new: (data) => this.bulletAddNew(data),
     bullet_set_coords: (data) => this.bulletSetCoordinats(data),
     bullet_remove: (data) => this.bulletRemove(data),
+    player_add_damage: (data) => this.playerAddDamage(data),
+    player_death: (data) => this.playerDeath(data),
   };
 
   connect = () => {
-    this.websocket = new WebSocket('ws://localhost:8080');
+    // this.websocket = new WebSocket('ws://messenger.servehttp.com:8082'); // online
+    this.websocket = new WebSocket('ws://localhost:8080'); // locale
     this.websocket.onopen = this.onOpen;
     this.websocket.onclose = this.onClose;
     this.websocket.onmessage = this.onMessage;
@@ -47,6 +50,8 @@ class Socket {
   bulletAddNew = (data) => GameStore.addBulletOfAnotherPlayer(data);
   bulletSetCoordinats = (data) => GameStore.setBulletCoordinats(data);
   bulletRemove = (data) => GameStore.removeBulletOfAnotherPlayer(data);
+  playerAddDamage = (data) => GameStore.addDamageToPlayer(data);
+  playerDeath = (data) => GameStore.playerDeath(data);
 
   registerPlayerRequest = () => {
     this.send({
@@ -85,28 +90,23 @@ class Socket {
       data: bulletData,
     });
   };
+
+  sendPlayerDeath = (playerData) => {
+    this.send({
+      type: 'player_death',
+      data: playerData,
+    });
+  };
+
+  sendPlayerAddDamage = (playerData) => {
+    this.send({
+      type: 'player_add_damage',
+      data: {
+        ...playerData,
+        currentPlayerID: GameStore.currentPlayer.id,
+      },
+    });
+  };
 }
 
 export default new Socket();
-
-//     case 'bullet_create': {
-//       bullet.id = data.id;
-//       bulletListOfCurrentPlayer = data.bullets.map((bulletData) => new Bullet({ ...bulletData }));
-//       break;
-//     }
-
-//     case 'bullet_add_new': {
-//       bulletListOfCurrentPlayer.push(new Bullet(data));
-//       break;
-//     }
-
-//     case 'bullet_set_coords': {
-//       const tempBullet = bulletListOfCurrentPlayer.find((v) => v.id === data.id);
-//       tempBullet.x = data.x;
-//       tempBullet.y = data.y;
-//       break;
-//     }
-//     default:
-//       break;
-//   }
-// };
