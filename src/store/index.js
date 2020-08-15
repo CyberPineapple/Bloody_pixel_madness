@@ -43,9 +43,29 @@ class GameStore {
     this.playersList.push(new Player(playerData));
   };
 
+  removePlayer = (id) => {
+    this.playersList = this.playersList.filter((player) => player.id !== id);
+  };
+
   setPlayerCoordinats = (playerData) => {
     const tempPlayer = this.playersList.find((v) => v.id === playerData.id);
     if (tempPlayer) tempPlayer.move(playerData);
+  };
+
+  //  fix me
+  addDamageToPlayer = (playerData) => {
+    const tempPlayer =
+      this.currentPlayer.id === playerData.playerID
+        ? this.currentPlayer
+        : this.playersList.find((v) => v.id === playerData.playerID);
+
+    if (tempPlayer) tempPlayer.HP -= playerData.damage;
+  };
+
+  //  fix me
+  playerDeath = (playerData) => {
+    if (this.currentPlayer.id === playerData.playerID) return (this.currentPlayer.state.isDeath = true);
+    this.removePlayer(playerData.playerID);
   };
 
   setBulletCoordinats = (bulletData) => {

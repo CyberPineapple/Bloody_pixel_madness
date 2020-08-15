@@ -117,6 +117,7 @@ export default class CurrentPlayer extends Player {
 
   death = () => {
     this.state.isDeath = true;
+    if (Socket.isConnected && this.id) Socket.sendPlayerDeath({ playerID: this.id });
   };
 
   checkCollision = () => {

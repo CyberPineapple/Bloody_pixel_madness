@@ -1,6 +1,7 @@
 import BaseObject from '../BaseObject/index';
 import Gun from '../Gun/index';
 import Canvas from '../../utils/canvas.js';
+import Socket from '../../utils/websocket.js';
 
 export default class Player extends BaseObject {
   constructor({ x, y, id, color = 'orange' }) {
@@ -87,11 +88,15 @@ export default class Player extends BaseObject {
   }
 
   death = () => {
-    this.color = 'red';
+    if (Socket.isConnected && this.id) Socket.sendPlayerDeath({ playerID: this.id });
   };
 
   addDamage = (damage) => {
-    this.HP -= damage;
-    if (this.HP <= 0) this.death();
+    if (this.HP <= 0) {
+      this.death();
+    } else {
+      this.HP -= damage;
+      if (Socket.isConnected && this.id) Socket.sendPlayerAddDamage({ targetPlayerID: this.id, damage });
+    }
   };
 }
