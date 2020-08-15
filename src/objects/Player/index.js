@@ -33,6 +33,10 @@ export default class Player extends BaseObject {
     return this.movementDirection === 'right';
   }
 
+  get HPLineLength() {
+    return (this.HP * this.width) / 100;
+  }
+
   move = ({ x, y }) => {
     this.y = y;
     if (this.x === x) return;
@@ -46,7 +50,7 @@ export default class Player extends BaseObject {
     // draw hp indicator
     Canvas.context.beginPath();
     Canvas.context.fillStyle = 'red';
-    Canvas.context.fillRect(this.x, this.y - 5, this.HP * 0.2, 2);
+    Canvas.context.fillRect(this.x, this.y - 5, this.HPLineLength, 2);
     Canvas.context.closePath();
 
     Canvas.context.beginPath();
