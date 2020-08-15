@@ -19,6 +19,7 @@ export default class Gun extends BaseObject {
 
   params = {
     speed: 100,
+    defaultSpeed: 100,
   };
 
   get getDirectionOffset() {
@@ -34,15 +35,19 @@ export default class Gun extends BaseObject {
 
   use = (target) => {
     if (!this.state.isMayUse) return;
-    GameStore.addBullet({
-      x: this.centerX + this.getDirectionOffset,
-      y: this.y,
-      target,
-    });
+    this.fire(target);
 
     this.state.isMayUse = false;
     setTimeout(() => {
       this.state.isMayUse = true;
     }, this.params.speed);
+  };
+
+  fire = (target) => {
+    GameStore.addBullet({
+      x: this.centerX + this.getDirectionOffset,
+      y: this.y,
+      target,
+    });
   };
 }

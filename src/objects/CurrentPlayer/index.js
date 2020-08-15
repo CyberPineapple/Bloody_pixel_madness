@@ -31,7 +31,8 @@ export default class CurrentPlayer extends Player {
   };
 
   activeObjects = {
-    Space: (target) => this.inventary.gun.use(target),
+    Space: (target) => this.inventory.gun.use(target),
+    KeyE: () => null,
   };
 
   keyboardKeys = {};
@@ -61,6 +62,7 @@ export default class CurrentPlayer extends Player {
     if (this.keyboardKeys.KeyD) this.runRight();
     if (this.keyboardKeys.KeyW) this.jump();
     if (this.keyboardKeys.Space) this.activeObjects.Space(this.cursor.sizeData);
+    if (this.keyboardKeys.KeyE) this.activeObjects.KeyE();
 
     this.jumpPhysics();
     this.move();
@@ -105,6 +107,7 @@ export default class CurrentPlayer extends Player {
   checkCollision = () => {
     GameStore.platformList.forEach(this.collision);
     GameStore.playersList.forEach(this.collision);
+    GameStore.bonusList.forEach(this.collisionBonus);
   };
 
   collision = (platform) => {
@@ -122,6 +125,20 @@ export default class CurrentPlayer extends Player {
       if (this.dy < 0 && this.y + this.height > platform.y + platform.height) {
         this.y = platform.y + platform.height;
       }
+    }
+  };
+
+  collisionBonus = (bonus) => {
+    if (isStaticIntersect(this.sizeData, bonus.sizeData)) {
+      // if (
+      //   this.y > bonus.y &&
+      //   this.y + this.height < bonus.y + bonus.height &&
+      //   this.x > bonus.x &&
+      //   this.x + this.width < bonus.x + bonus.width
+      // ) {
+      this.activeObjects.KeyE = () => bonus.use(this);
+      GameStore.removeBonus(bonus.id);
+      // }
     }
   };
 }

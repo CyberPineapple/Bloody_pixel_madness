@@ -3,11 +3,14 @@ import CurrentBullet from '../objects/CurrentBullet/index.js';
 import Player from '../objects/Player/index.js';
 import Bullet from '../objects/Bullet/index.js';
 import Platform from '../objects/Platform/index.js';
+import Bonus from '../objects/Bonus/index.js';
 import platforms from '../map/index.js';
 
 class GameStore {
   constructor() {
     this.currentPlayer = new CurrentPlayer({ x: 100, y: 100 });
+
+    this.bonusList = [];
 
     this.platformList = platforms.map((wall) => new Platform(wall));
 
@@ -22,6 +25,14 @@ class GameStore {
 
   addBullet = ({ x, y, target }) => {
     this.bulletListOfCurrentPlayer.push(new CurrentBullet({ x, y, target }));
+  };
+
+  removeBonus = (id) => {
+    this.bonusList = this.bonusList.filter((bonus) => bonus.id !== id);
+  };
+
+  addBonus = ({ x, y, type }) => {
+    this.bonusList.push(new Bonus({ x, y, type }));
   };
 
   setPlayers = (players) => {

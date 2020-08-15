@@ -14,7 +14,7 @@ export default class Player extends BaseObject {
     this.HP = 100;
   }
 
-  inventary = {
+  inventory = {
     gun: new Gun({ x: this.x, y: this.y, direction: this.movementDirection }),
   };
 
@@ -43,6 +43,7 @@ export default class Player extends BaseObject {
   draw() {
     super.draw();
 
+    // draw hp indicator
     Canvas.context.beginPath();
     Canvas.context.fillStyle = 'red';
     Canvas.context.fillRect(this.x, this.y - 5, this.HP * 0.2, 2);
@@ -71,13 +72,13 @@ export default class Player extends BaseObject {
     }
     Canvas.context.closePath();
 
-    for (let key in this.inventary) {
-      this.inventary[key].move({
+    for (let key in this.inventory) {
+      this.inventory[key].move({
         x: this.x,
         y: this.y,
         direction: this.movementDirection,
       });
-      this.inventary[key].draw();
+      this.inventory[key].draw();
     }
   }
 
