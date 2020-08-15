@@ -28,6 +28,7 @@ export default class CurrentPlayer extends Player {
 
   state = {
     isMayJump: true,
+    isDeath: false,
   };
 
   activeObjects = {
@@ -37,6 +38,10 @@ export default class CurrentPlayer extends Player {
 
   keyboardKeys = {};
   frameCounter = 0;
+
+  get isDeath() {
+    return this.state.isDeath;
+  }
 
   handleKeyDown = ({ code }) => (this.keyboardKeys[code] = true);
   handleKeyUp = ({ code }) => (this.keyboardKeys[code] = false);
@@ -102,6 +107,10 @@ export default class CurrentPlayer extends Player {
   gravityPhysics = () => {
     if (this.state.jumping) return;
     this.dy = gravity;
+  };
+
+  death = () => {
+    this.state.isDeath = true;
   };
 
   checkCollision = () => {
