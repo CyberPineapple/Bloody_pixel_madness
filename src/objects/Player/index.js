@@ -2,11 +2,12 @@ import BaseObject from '../BaseObject/index';
 import Gun from '../Gun/index';
 import Canvas from '../../utils/canvas.js';
 import Socket from '../../utils/websocket.js';
+import PlayerAnimation from './animations/index.js';
 
 export default class Player extends BaseObject {
   constructor({ x, y, id, color = 'orange' }) {
     const width = 20;
-    const height = 20;
+    const height = 30;
     super({ x, y, width, height, color });
 
     if (id) this.id = id;
@@ -14,6 +15,10 @@ export default class Player extends BaseObject {
     this.movementDirection = 'right';
     this.HP = 100;
     this.isPlayer = true;
+
+    this.animations = new PlayerAnimation(() => this.sizeData);
+
+    this.currentAnimation = 'stay';
   }
 
   inventory = {
@@ -39,14 +44,15 @@ export default class Player extends BaseObject {
     return (this.HP * this.width) / 100;
   }
 
-  move = ({ x, y, direction }) => {
+  setData = ({ x, y, direction, animation }) => {
     this.y = y;
     this.x = x;
-    if (direction) this.movementDirection = direction;
+    this.currentAnimation = animation;
+    this.movementDirection = direction;
   };
 
   draw() {
-    super.draw();
+    // super.draw();
 
     // draw hp indicator
     Canvas.context.beginPath();
@@ -54,28 +60,7 @@ export default class Player extends BaseObject {
     Canvas.context.fillRect(this.x, this.y - 5, this.HPLineLength, 2);
     Canvas.context.closePath();
 
-    Canvas.context.beginPath();
-    Canvas.context.fillStyle = this.eyes.color;
-    if (this.isLeftDirection) {
-      // draw eyes
-      Canvas.context.fillRect(
-        this.x - this.eyes.width,
-        this.y + this.eyes.marginTop,
-        this.eyes.width,
-        this.eyes.heigth
-      );
-      Canvas.context.fillRect(
-        this.centerX - this.eyes.width,
-        this.y + this.eyes.marginTop,
-        this.eyes.width,
-        this.eyes.heigth
-      );
-    } else {
-      // draw eyes
-      Canvas.context.fillRect(this.xl, this.y + this.eyes.marginTop, this.eyes.width, this.eyes.heigth);
-      Canvas.context.fillRect(this.centerX, this.y + this.eyes.marginTop, this.eyes.width, this.eyes.heigth);
-    }
-    Canvas.context.closePath();
+    this.animations[this.currentAnimation]();
 
     for (let key in this.inventory) {
       this.inventory[key].move({

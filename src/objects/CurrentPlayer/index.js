@@ -43,6 +43,14 @@ export default class CurrentPlayer extends Player {
     return this.state.isDeath;
   }
 
+  get playerData() {
+    return {
+      ...this.sizeData,
+      animation: this.currentAnimation,
+      id: this.id,
+    };
+  }
+
   handleKeyDown = ({ code }) => (this.keyboardKeys[code] = true);
   handleKeyUp = ({ code }) => (this.keyboardKeys[code] = false);
 
@@ -60,6 +68,7 @@ export default class CurrentPlayer extends Player {
   };
 
   tick = () => {
+    this.currentAnimation = 'stay';
     this.stopMove();
     this.gravityPhysics();
 
@@ -73,21 +82,21 @@ export default class CurrentPlayer extends Player {
     this.move();
     this.checkCollision();
 
-    if (Socket.isConnected && this.id)
-      Socket.sendPlayerCoordinats({
-        x: this.x,
-        y: this.y,
-        direction: this.movementDirection,
-        id: this.id,
-      });
+    if (Socket.isConnected && this.id) Socket.sendPlayerCoordinats(this.playerData);
 
-    this.draw();
+    super.draw();
 
     this.cursor.draw();
   };
 
-  runLeft = () => (this.dx = -this.params.speed);
-  runRight = () => (this.dx = this.params.speed);
+  runLeft = () => {
+    this.dx = -this.params.speed;
+    this.currentAnimation = 'move';
+  };
+  runRight = () => {
+    this.dx = this.params.speed;
+    this.currentAnimation = 'move';
+  };
 
   move = () => {
     this.x += this.dx;
@@ -107,6 +116,7 @@ export default class CurrentPlayer extends Player {
     } else {
       this.frameCounter++;
       this.dy = -gravity - this.params.jumpSpeed;
+      this.currentAnimation = 'jump';
     }
   };
 
@@ -128,15 +138,8 @@ export default class CurrentPlayer extends Player {
 
   collisionBonus = (bonus) => {
     if (isStaticIntersect(this.sizeData, bonus.sizeData)) {
-      // if (
-      //   this.y > bonus.y &&
-      //   this.y + this.height < bonus.y + bonus.height &&
-      //   this.x > bonus.x &&
-      //   this.x + this.width < bonus.x + bonus.width
-      // ) {
       this.activeObjects.KeyE = () => bonus.use(this);
       GameStore.removeBonus(bonus.id);
-      // }
     }
   };
 }

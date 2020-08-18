@@ -4,13 +4,22 @@ import socket from './src/utils/websocket.js';
 
 socket.connect();
 
-GameStore.addBonus({ x: 200, y: 100, type: 'medicBox' });
-GameStore.addBonus({ x: 400, y: 100, type: 'speed' });
-GameStore.addBonus({ x: 300, y: 200, type: 'gunSpeed' });
+// GameStore.addBonus({ x: 200, y: 100, type: 'medicBox' });
+// GameStore.addBonus({ x: 400, y: 100, type: 'speed' });
+// GameStore.addBonus({ x: 300, y: 200, type: 'gunSpeed' });
+
+let oldTime = Date.now();
 
 const gameTick = () => {
   if (GameStore.currentPlayer.isDeath) {
     return Canvas.gameover();
+  }
+
+  const newTime = Date.now();
+
+  if ((newTime - oldTime) / 1000 >= 0.2) {
+    GameStore.incrementGameCounter();
+    oldTime = newTime;
   }
 
   Canvas.context.clearRect(0, 0, Canvas.element.width, Canvas.element.height);

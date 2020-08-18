@@ -16,7 +16,7 @@ class Socket {
   };
 
   connect = () => {
-    // this.websocket = new WebSocket('ws://messenger.servehttp.com:8082'); // online
+    // this.websocket = new WebSocket('ws://messenger.servehttp.com:8080'); // online
     this.websocket = new WebSocket('ws://localhost:8080'); // locale
     this.websocket.onopen = this.onOpen;
     this.websocket.onclose = this.onClose;
@@ -56,10 +56,7 @@ class Socket {
   registerPlayerRequest = () => {
     this.send({
       type: 'player_register',
-      data: {
-        x: GameStore.currentPlayer.x,
-        y: GameStore.currentPlayer.y,
-      },
+      data: GameStore.currentPlayer.playerData,
     });
   };
 

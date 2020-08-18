@@ -1,6 +1,27 @@
 const WebSocket = require('ws');
 
-const wss = new WebSocket.Server({ port: 8080 });
+const wss = new WebSocket.Server({
+  port: 8080,
+  perMessageDeflate: {
+    zlibDeflateOptions: {
+      // См.
+      ChunkSize: 1024,
+      memLevel: 7,
+      level: 3,
+    },
+    zlibInflateOptions: {
+      chunkSize: 10 * 1024,
+    },
+    // Другие устанавливаемые параметры:
+    clientNoContextTakeover: true, // По умолчанию согласованное значение.
+    serverNoContextTakeover: true, // По умолчанию согласованное значение.
+    serverMaxWindowBits: 10, // По умолчанию согласованное значение.
+    // Ниже параметры указаны как значения по умолчанию.
+    concurrencyLimit: 10, // Ограничивает параллелизм zlib для perf.
+    threshold: 1024, // Размер (в байтах), ниже которого сообщения
+    // не должны сжиматься.
+  },
+});
 
 let players = [];
 let bulletList = [];
@@ -24,7 +45,7 @@ wss.on('connection', (ws) => {
 
 const playerRegister = (data, ws) => {
   const newPlayer = {
-    player: { id: Date.now(), x: data.x, y: data.y },
+    player: { id: Date.now(), ...data },
     socket: ws,
   };
 
@@ -57,9 +78,7 @@ const playerRegister = (data, ws) => {
 const playerSetCoordinats = (data) => {
   const tempPlayer = players.find((v) => v.player.id === data.id);
   if (!tempPlayer) return;
-  tempPlayer.player.x = data.x;
-  tempPlayer.player.y = data.y;
-  tempPlayer.player.direction = data.direction;
+  tempPlayer.player = { ...tempPlayer.player, ...data };
 
   const playersListWithoutCurrentPlayer = players.filter((v) => v.player.id !== data.id);
 
@@ -67,12 +86,7 @@ const playerSetCoordinats = (data) => {
     player.socket.send(
       JSON.stringify({
         type: 'player_set_coords',
-        data: {
-          x: data.x,
-          y: data.y,
-          direction: data.direction,
-          id: data.id,
-        },
+        data: tempPlayer.player,
       })
     );
   });

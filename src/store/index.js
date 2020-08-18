@@ -8,6 +8,7 @@ import platforms from '../map/index.js';
 
 class GameStore {
   constructor() {
+    this.gameCounter = 0;
     this.currentPlayer = new CurrentPlayer({ x: 100, y: 100 });
 
     this.bonusList = [];
@@ -18,6 +19,8 @@ class GameStore {
     this.bulletListOfAnotherPlayers = [];
     this.playersList = [];
   }
+
+  incrementGameCounter = () => this.gameCounter++;
 
   removeBullet = (id) => {
     this.bulletListOfCurrentPlayer = this.bulletListOfCurrentPlayer.filter((bullet) => bullet.id !== id);
@@ -49,7 +52,7 @@ class GameStore {
 
   setPlayerCoordinats = (playerData) => {
     const tempPlayer = this.playersList.find((v) => v.id === playerData.id);
-    if (tempPlayer) tempPlayer.move(playerData);
+    if (tempPlayer) tempPlayer.setData(playerData);
   };
 
   //  fix me
