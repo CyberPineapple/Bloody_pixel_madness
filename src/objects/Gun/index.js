@@ -1,5 +1,6 @@
 import BaseObject from '../BaseObject/index';
 import GameStore from '../../store/index.js';
+import { getRotateVector } from '../../utils/math.js';
 
 export default class Gun extends BaseObject {
   constructor({ x, y, direction }) {
@@ -48,6 +49,18 @@ export default class Gun extends BaseObject {
       x: this.centerX + this.getDirectionOffset,
       y: this.y,
       target,
+    });
+
+    GameStore.addBullet({
+      x: this.centerX + this.getDirectionOffset,
+      y: this.y,
+      target: getRotateVector(target, 5),
+    });
+
+    GameStore.addBullet({
+      x: this.centerX + this.getDirectionOffset,
+      y: this.y,
+      target: getRotateVector(target, -5),
     });
   };
 }
