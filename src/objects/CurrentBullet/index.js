@@ -1,5 +1,6 @@
 import { isStaticIntersect } from '../../utils/collision';
 import { getUniqId } from '../../utils/helpers.js';
+import { getNormalizedVector } from '../../utils/math.js';
 import Bullet from '../Bullet/index.js';
 import GameStore from '../../store/index.js';
 import Socket from '../../utils/websocket.js';
@@ -9,10 +10,10 @@ export default class CurrentBullet extends Bullet {
     const id = getUniqId();
     super({ x, y, id });
 
-    const vectorLength = Math.sqrt(Math.pow(target.x - this.x, 2) + Math.pow(target.y - this.y, 2));
+    const normalizedVector = getNormalizedVector({ x, y }, target);
 
-    this.dx = (target.y - this.y) / vectorLength;
-    this.dy = (target.x - this.x) / vectorLength;
+    this.dx = normalizedVector.x;
+    this.dy = normalizedVector.y;
 
     if (Socket.isConnected) {
       Socket.createBullet({ ...this.sizeData, id: this.id, playerId: GameStore.currentPlayer.id });
@@ -47,7 +48,7 @@ export default class CurrentBullet extends Bullet {
   checkCollision = () => {
     GameStore.platformList.forEach(this.platformCollision);
     GameStore.playersList.forEach(this.playerCollision);
-    this.playerCollision(GameStore.currentPlayer);
+    // this.playerCollision(GameStore.currentPlayer); // collision for current player
   };
 
   platformCollision = (platform) => {
