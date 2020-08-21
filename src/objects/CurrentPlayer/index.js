@@ -47,7 +47,8 @@ export default class CurrentPlayer extends Player {
     return {
       ...this.sizeData,
       animation: this.currentAnimation,
-      id: this.id,
+      id: this.id, // only for server v1
+      direction: this.movementDirection,
     };
   }
 
