@@ -7,7 +7,7 @@ import PlayerAnimation from './animations/index.js';
 export default class Player extends BaseObject {
   constructor({ x, y, id, color = 'orange' }) {
     const width = 20;
-    const height = 30;
+    const height = 40;
     super({ x, y, width, height, color });
 
     if (id) this.id = id;
@@ -60,7 +60,9 @@ export default class Player extends BaseObject {
     Canvas.context.fillRect(this.x, this.y - 5, this.HPLineLength, 2);
     Canvas.context.closePath();
 
-    this.animations[this.currentAnimation]();
+    this.animations[this.currentAnimation](); // draw player animation
+
+    Canvas.context.closePath();
 
     for (let key in this.inventory) {
       this.inventory[key].move({
